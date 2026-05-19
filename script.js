@@ -127,7 +127,7 @@ function collectClaimInput() {
 function analyzeClaimWithAI(claim) {
   // TODO: Replace mock logic with Azure OpenAI integration (prompt + claim payload, auth header handling,
   // structured JSON response mapping for clauses/risks/recommendation, plus timeout and error fallback strategy).
-  const lowerText = `${claim.claimName} ${claim.technicalReview} ${claim.justification}`.toLowerCase();
+  const lowerText = `${claim.claimName} ${claim.technicalReview || ""} ${claim.justification}`.toLowerCase();
 
   let priceSource = CONTRACT_REFERENCE.preise.kabeltrasse;
   if (containsAny(lowerText, ["aushub"])) priceSource = CONTRACT_REFERENCE.preise.bodenaushub;
