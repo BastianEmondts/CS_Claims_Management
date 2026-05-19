@@ -8,17 +8,40 @@
   </head>
   <body>
     <main class="container">
-      <header>
+      <header class="app-header card">
         <h1>Contract & Claim Management</h1>
-        <p>
-          Statische Demo für KI-unterstützte Claim-Bewertung (Mock-Funktionen,
-          keine echte KI-Anbindung).
-        </p>
+        <p>Prozessgeführte, rollenübergreifende Demo für eine Teams-integrierbare Bearbeitung.</p>
       </header>
 
+      <section class="card workflow-section" data-step="1">
+        <h2>Prozessstatus</h2>
+        <p>Alle Prozessfunktionen sind für einen Nutzer sichtbar und bearbeitbar.</p>
+        <div id="processBar" class="process-bar" aria-label="Übergreifende Prozessleiste"></div>
+        <div class="process-controls">
+          <button id="btnPrevStep" type="button">◀ Vorheriger Schritt</button>
+          <p>Aktueller Schritt: <strong id="currentStepLabel"></strong></p>
+          <button id="btnNextStep" type="button">Nächster Schritt ▶</button>
+        </div>
+      </section>
+
       <section class="card">
-        <h2>1) Claim-Dokumente aufnehmen (simuliert)</h2>
-        <p>Wählen Sie Beispiel-Dokumente aus:</p>
+        <h2>Prozessübersicht (aus der Grafik)</h2>
+        <div class="process-details">
+          <article class="process-detail" data-step="1"><h3>1. Claimprüfung durchführen</h3><p>Formale Prüfung inkl. Checkliste und auslösender Ereignisse.</p></article>
+          <article class="process-detail" data-step="2"><h3>2. (Fach-)Technische Prüfung</h3><p>Technische Begründung, Alternativen und Leistungsstand bewerten.</p></article>
+          <article class="process-detail" data-step="3"><h3>3. Kostenverfolgung</h3><p>Budget-, Contingency- und Kostenabgleich durchführen.</p></article>
+          <article class="process-detail" data-step="4"><h3>4. Prüfung dem Grunde nach</h3><p>Vertragliche Grundlage und Anspruchsvoraussetzungen prüfen.</p></article>
+          <article class="process-detail" data-step="5"><h3>5. Terminliche Prüfung</h3><p>Meilensteine, Verschiebungen und Terminpläne abgleichen.</p></article>
+          <article class="process-detail" data-step="6"><h3>6. Prüfung der Höhe nach</h3><p>Kalkulatorische und marktübliche Angemessenheit bewerten.</p></article>
+          <article class="process-detail" data-step="7"><h3>7. Risikoangaben eintragen</h3><p>Risiken mit Risikoregister abgleichen und dokumentieren.</p></article>
+          <article class="process-detail" data-step="8"><h3>8. Verhandlung durchführen</h3><p>Verhandlungsstrategie und Unterlagen für Gespräche erstellen.</p></article>
+          <article class="process-detail" data-step="9"><h3>9. Annahme-/Ablehnungsschreiben</h3><p>Entscheidung formulieren und Ergebnis dokumentieren.</p></article>
+        </div>
+      </section>
+
+      <section class="card workflow-section" data-step="1">
+        <h2>1) Claim-Dokumente aufnehmen</h2>
+        <p>Wählen Sie die verfügbaren Unterlagen:</p>
         <div id="documents" class="grid two-col">
           <label><input type="checkbox" value="Nachtragsschreiben" /> Nachtragsschreiben</label>
           <label><input type="checkbox" value="Nachtragsangebot" /> Nachtragsangebot</label>
@@ -29,8 +52,8 @@
         </div>
       </section>
 
-      <section class="card">
-        <h2>2) Claim erfassen</h2>
+      <section class="card workflow-section" data-step="2">
+        <h2>2–3) Technische Prüfung und Kostenverfolgung</h2>
         <form id="claim-form" class="grid two-col">
           <label>
             Claim-Bezeichnung
@@ -49,44 +72,50 @@
             <input id="claimQuantity" type="number" min="0" step="0.01" required />
           </label>
           <label class="full-width">
+            Technische Prüfung
+            <textarea id="technicalReview" rows="3" placeholder="Technische Bewertung, Alternativen, Leistungsstand"></textarea>
+          </label>
+          <label class="full-width">
             Begründung
             <textarea id="justification" rows="4" required placeholder="Kurze fachliche Begründung"></textarea>
           </label>
-          <button type="submit" class="primary">KI-Analyse starten (simuliert)</button>
+          <button type="submit" class="primary">Prüfung und Bewertung starten</button>
         </form>
       </section>
 
-      <section id="dashboard" class="card hidden" aria-live="polite">
-        <h2>3) Ergebnis-Dashboard</h2>
+      <section id="dashboard" class="card workflow-section" data-step="4" aria-live="polite">
+        <h2>4–7) Bewertungs-Dashboard</h2>
         <div class="grid two-col">
           <article>
             <h3>Bewertung dem Grunde nach</h3>
-            <p id="basisResult"></p>
+            <p id="basisResult">Noch keine Prüfung durchgeführt.</p>
             <ul id="clauseMatches"></ul>
           </article>
           <article>
             <h3>Bewertung der Höhe nach</h3>
-            <p id="amountResult"></p>
-            <p id="amountDetails"></p>
+            <p id="amountResult">Noch keine Prüfung durchgeführt.</p>
+            <p id="amountDetails">Noch keine Berechnung.</p>
           </article>
           <article>
             <h3>Risikoeinschätzung</h3>
-            <ul id="riskResult"></ul>
+            <ul id="riskResult">
+              <li>Noch keine Risiken ermittelt.</li>
+            </ul>
           </article>
           <article>
             <h3>Terminfolgen-Prüfung</h3>
-            <p id="scheduleResult"></p>
+            <p id="scheduleResult">Noch keine Terminprüfung durchgeführt.</p>
           </article>
         </div>
 
         <article class="recommendation">
           <h3>Empfehlung</h3>
-          <p id="recommendation"></p>
+          <p id="recommendation">Bitte zuerst den Claim prüfen.</p>
         </article>
       </section>
 
-      <section id="drafts" class="card hidden">
-        <h2>4) Generierung von Textentwürfen (Mock)</h2>
+      <section id="drafts" class="card workflow-section" data-step="8">
+        <h2>8–9) Verhandlung und Schreiben</h2>
         <div class="actions">
           <button id="btnNegotiation" type="button">Verhandlungsvorbereitung</button>
           <button id="btnRejection" type="button">Ablehnungsschreiben</button>
@@ -94,7 +123,7 @@
         </div>
         <label class="full-width">
           Entwurf
-          <textarea id="draftOutput" rows="10" readonly></textarea>
+          <textarea id="draftOutput" rows="10" readonly placeholder="Nach einer Bewertung können Entwürfe erstellt werden."></textarea>
         </label>
       </section>
     </main>

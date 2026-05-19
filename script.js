@@ -1,3 +1,17 @@
+const PROCESS_STEPS = [
+  "Claimprüfung durchführen",
+  "(Fach-)Technische Prüfung durchführen",
+  "Kostenverfolgung",
+  "Prüfung dem Grunde nach",
+  "Terminliche Prüfung durchführen",
+  "Prüfung der Höhe nach",
+  "Risikoangaben eintragen",
+  "Verhandlung durchführen",
+  "Annahme-/Ablehnungsschreiben"
+];
+const MIN_STEP = 1;
+const MAX_STEP = PROCESS_STEPS.length;
+
 const CONTRACT_REFERENCE = {
   klauseln: [
     { id: "K-12", text: "Nebenleistungen sind im Einheitspreis enthalten." },
@@ -20,10 +34,14 @@ const RISK_REGISTER = [
 const DEFAULT_RISK = RISK_REGISTER[0];
 
 let lastAnalysis = null;
+let currentStep = MIN_STEP;
 
+const processBar = document.getElementById("processBar");
+const currentStepLabel = document.getElementById("currentStepLabel");
 const form = document.getElementById("claim-form");
-const dashboard = document.getElementById("dashboard");
-const drafts = document.getElementById("drafts");
+
+renderProcessBar();
+setCurrentStep(MIN_STEP);
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -31,26 +49,64 @@ form.addEventListener("submit", (event) => {
   const claim = collectClaimInput();
   lastAnalysis = analyzeClaimWithAI(claim);
   renderDashboard(lastAnalysis);
-
-  dashboard.classList.remove("hidden");
-  drafts.classList.remove("hidden");
   document.getElementById("draftOutput").value = "";
+  setCurrentStep(6);
 });
 
 document.getElementById("btnNegotiation").addEventListener("click", () => {
   if (!lastAnalysis) return;
   document.getElementById("draftOutput").value = generateNegotiationDraft(lastAnalysis);
+  setCurrentStep(8);
 });
 
 document.getElementById("btnRejection").addEventListener("click", () => {
   if (!lastAnalysis) return;
   document.getElementById("draftOutput").value = generateRejectionDraft(lastAnalysis);
+  setCurrentStep(9);
 });
 
 document.getElementById("btnAcceptance").addEventListener("click", () => {
   if (!lastAnalysis) return;
   document.getElementById("draftOutput").value = generateAcceptanceDraft(lastAnalysis);
+  setCurrentStep(9);
 });
+
+document.getElementById("btnPrevStep").addEventListener("click", () => setCurrentStep(currentStep - 1));
+document.getElementById("btnNextStep").addEventListener("click", () => setCurrentStep(currentStep + 1));
+
+document.querySelectorAll(".workflow-section").forEach((section) => {
+  section.addEventListener("click", () => {
+    const step = Number(section.dataset.step);
+    if (step) setCurrentStep(step);
+  });
+});
+
+function renderProcessBar() {
+  processBar.innerHTML = "";
+  PROCESS_STEPS.forEach((label, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "process-step";
+    button.dataset.step = String(index + 1);
+    button.textContent = `${index + 1}. ${label}`;
+    button.addEventListener("click", () => setCurrentStep(index + 1));
+    processBar.appendChild(button);
+  });
+}
+
+function setCurrentStep(step) {
+  currentStep = Math.min(MAX_STEP, Math.max(MIN_STEP, step));
+
+  document.querySelectorAll(".process-step").forEach((entry) => {
+    entry.classList.toggle("active", Number(entry.dataset.step) === currentStep);
+  });
+
+  document.querySelectorAll(".process-detail").forEach((entry) => {
+    entry.classList.toggle("active", Number(entry.dataset.step) === currentStep);
+  });
+
+  currentStepLabel.textContent = `${currentStep}. ${PROCESS_STEPS[currentStep - 1]}`;
+}
 
 function collectClaimInput() {
   const selectedDocuments = Array.from(document.querySelectorAll('#documents input[type="checkbox"]:checked')).map(
@@ -62,6 +118,7 @@ function collectClaimInput() {
     contractSection: document.getElementById("contractSection").value.trim(),
     claimAmount: Number(document.getElementById("claimAmount").value),
     claimQuantity: Number(document.getElementById("claimQuantity").value),
+    technicalReview: document.getElementById("technicalReview").value.trim(),
     justification: document.getElementById("justification").value.trim(),
     documents: selectedDocuments
   };
@@ -70,7 +127,7 @@ function collectClaimInput() {
 function analyzeClaimWithAI(claim) {
   // TODO: Replace mock logic with Azure OpenAI integration (prompt + claim payload, auth header handling,
   // structured JSON response mapping for clauses/risks/recommendation, plus timeout and error fallback strategy).
-  const lowerText = `${claim.claimName} ${claim.justification}`.toLowerCase();
+  const lowerText = `${claim.claimName} ${claim.technicalReview} ${claim.justification}`.toLowerCase();
 
   let priceSource = CONTRACT_REFERENCE.preise.kabeltrasse;
   if (containsAny(lowerText, ["aushub"])) priceSource = CONTRACT_REFERENCE.preise.bodenaushub;
