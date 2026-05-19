@@ -9,6 +9,8 @@ const PROCESS_STEPS = [
   "Verhandlung durchführen",
   "Annahme-/Ablehnungsschreiben"
 ];
+const MIN_STEP = 1;
+const MAX_STEP = PROCESS_STEPS.length;
 
 const CONTRACT_REFERENCE = {
   klauseln: [
@@ -32,14 +34,14 @@ const RISK_REGISTER = [
 const DEFAULT_RISK = RISK_REGISTER[0];
 
 let lastAnalysis = null;
-let currentStep = 1;
+let currentStep = MIN_STEP;
 
 const processBar = document.getElementById("processBar");
 const currentStepLabel = document.getElementById("currentStepLabel");
 const form = document.getElementById("claim-form");
 
 renderProcessBar();
-setCurrentStep(1);
+setCurrentStep(MIN_STEP);
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -93,7 +95,7 @@ function renderProcessBar() {
 }
 
 function setCurrentStep(step) {
-  currentStep = Math.min(PROCESS_STEPS.length, Math.max(1, step));
+  currentStep = Math.min(MAX_STEP, Math.max(MIN_STEP, step));
 
   document.querySelectorAll(".process-step").forEach((entry) => {
     entry.classList.toggle("active", Number(entry.dataset.step) === currentStep);
