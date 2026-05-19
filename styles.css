@@ -1,0 +1,84 @@
+:root {
+  color-scheme: light;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f4f6f8;
+  color: #1f2937;
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.grid {
+  display: grid;
+  gap: 12px;
+}
+
+.two-col {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+input,
+textarea,
+button {
+  font: inherit;
+  padding: 8px;
+}
+
+button {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #eef2ff;
+  cursor: pointer;
+}
+
+button.primary {
+  background: #2563eb;
+  color: #fff;
+  border-color: #1d4ed8;
+}
+
+button:hover {
+  filter: brightness(0.98);
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.hidden {
+  display: none;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.recommendation {
+  border-top: 1px solid #e5e7eb;
+  margin-top: 12px;
+  padding-top: 10px;
+}

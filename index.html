@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CCM Claim Management (Mock KI)</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <h1>Contract & Claim Management</h1>
+        <p>
+          Statische Demo für KI-unterstützte Claim-Bewertung (Mock-Funktionen,
+          keine echte KI-Anbindung).
+        </p>
+      </header>
+
+      <section class="card">
+        <h2>1) Claim-Dokumente aufnehmen (simuliert)</h2>
+        <p>Wählen Sie Beispiel-Dokumente aus:</p>
+        <div id="documents" class="grid two-col">
+          <label><input type="checkbox" value="Nachtragsschreiben" /> Nachtragsschreiben</label>
+          <label><input type="checkbox" value="Nachtragsangebot" /> Nachtragsangebot</label>
+          <label><input type="checkbox" value="Vertrag Hauptleistung" /> Vertrag Hauptleistung</label>
+          <label><input type="checkbox" value="Leistungsverzeichnis" /> Leistungsverzeichnis</label>
+          <label><input type="checkbox" value="Terminplan" /> Terminplan</label>
+          <label><input type="checkbox" value="Risikoregister" /> Risikoregister</label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>2) Claim erfassen</h2>
+        <form id="claim-form" class="grid two-col">
+          <label>
+            Claim-Bezeichnung
+            <input id="claimName" required placeholder="z. B. Zusatzaufwand Kabeltrasse" />
+          </label>
+          <label>
+            Referenz Vertragsabschnitt
+            <input id="contractSection" required placeholder="z. B. §4.2 Erdarbeiten" />
+          </label>
+          <label>
+            Geforderter Betrag (€)
+            <input id="claimAmount" type="number" min="0" step="0.01" required />
+          </label>
+          <label>
+            Menge (Einheit)
+            <input id="claimQuantity" type="number" min="0" step="0.01" required />
+          </label>
+          <label class="full-width">
+            Begründung
+            <textarea id="justification" rows="4" required placeholder="Kurze fachliche Begründung"></textarea>
+          </label>
+          <button type="submit" class="primary">KI-Analyse starten (simuliert)</button>
+        </form>
+      </section>
+
+      <section id="dashboard" class="card hidden" aria-live="polite">
+        <h2>3) Ergebnis-Dashboard</h2>
+        <div class="grid two-col">
+          <article>
+            <h3>Bewertung dem Grunde nach</h3>
+            <p id="basisResult"></p>
+            <ul id="clauseMatches"></ul>
+          </article>
+          <article>
+            <h3>Bewertung der Höhe nach</h3>
+            <p id="amountResult"></p>
+            <p id="amountDetails"></p>
+          </article>
+          <article>
+            <h3>Risikoeinschätzung</h3>
+            <ul id="riskResult"></ul>
+          </article>
+          <article>
+            <h3>Terminfolgen-Prüfung</h3>
+            <p id="scheduleResult"></p>
+          </article>
+        </div>
+
+        <article class="recommendation">
+          <h3>Empfehlung</h3>
+          <p id="recommendation"></p>
+        </article>
+      </section>
+
+      <section id="drafts" class="card hidden">
+        <h2>4) Generierung von Textentwürfen (Mock)</h2>
+        <div class="actions">
+          <button id="btnNegotiation" type="button">Verhandlungsvorbereitung</button>
+          <button id="btnRejection" type="button">Ablehnungsschreiben</button>
+          <button id="btnAcceptance" type="button">Annahmeschreiben</button>
+        </div>
+        <label class="full-width">
+          Entwurf
+          <textarea id="draftOutput" rows="10" readonly></textarea>
+        </label>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
