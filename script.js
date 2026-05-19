@@ -17,6 +17,7 @@ const RISK_REGISTER = [
   { id: "R-15", name: "Planungsänderung", level: "hoch", tags: ["änderung", "umplanung", "zusatz"] },
   { id: "R-21", name: "Schnittstellenkonflikt", level: "mittel", tags: ["koordination", "schnittstelle"] }
 ];
+const DEFAULT_RISK = RISK_REGISTER[0];
 
 let lastAnalysis = null;
 
@@ -67,22 +68,23 @@ function collectClaimInput() {
 }
 
 function analyzeClaimWithAI(claim) {
-  // TODO: Integrate Azure OpenAI here.
+  // TODO: Replace mock logic with Azure OpenAI integration (prompt + claim payload, auth header handling,
+  // structured JSON response mapping for clauses/risks/recommendation, plus timeout and error fallback strategy).
   const lowerText = `${claim.claimName} ${claim.justification}`.toLowerCase();
 
   let priceSource = CONTRACT_REFERENCE.preise.kabeltrasse;
-  if (lowerText.includes("aushub")) priceSource = CONTRACT_REFERENCE.preise.bodenaushub;
-  if (lowerText.includes("planung") || lowerText.includes("umplanung")) priceSource = CONTRACT_REFERENCE.preise.umplanung;
+  if (containsAny(lowerText, ["aushub"])) priceSource = CONTRACT_REFERENCE.preise.bodenaushub;
+  if (containsAny(lowerText, ["planung", "umplanung"])) priceSource = CONTRACT_REFERENCE.preise.umplanung;
 
   const unitClaimed = claim.claimQuantity > 0 ? claim.claimAmount / claim.claimQuantity : claim.claimAmount;
-  const basisLikelyValid = lowerText.includes("änderung") || lowerText.includes("zusatz") || lowerText.includes("umplanung");
+  const basisLikelyValid = containsAny(lowerText, ["änderung", "zusatz", "umplanung"]);
   const amountPlausible = unitClaimed >= priceSource.marktMin && unitClaimed <= priceSource.marktMax;
 
   const matchedRisks = RISK_REGISTER.filter((risk) => risk.tags.some((tag) => lowerText.includes(tag)));
-  const risks = matchedRisks.length > 0 ? matchedRisks : [RISK_REGISTER[0]];
+  const risks = matchedRisks.length > 0 ? matchedRisks : [DEFAULT_RISK];
 
   const scheduleImpact =
-    lowerText.includes("termin") || lowerText.includes("verzug")
+    containsAny(lowerText, ["termin", "verzug"])
       ? "Voraussichtliche Terminwirkung: kritisch – Meilensteinverschiebung wahrscheinlich."
       : "Voraussichtliche Terminwirkung: moderat – keine kritischen Meilensteine direkt betroffen.";
 
@@ -173,4 +175,8 @@ function generateAcceptanceDraft(analysis) {
     "",
     "Mit freundlichen Grüßen"
   ].join("\n");
+}
+
+function containsAny(text, keywords) {
+  return keywords.some((keyword) => text.includes(keyword));
 }
